@@ -1,6 +1,7 @@
 '''
-python inferences/multi_scale_inference_segmentor_crack.py --crack_config  "/home/deogwonkang/WindowsShare/05. Data/03. Checkpoints/hardnegative/학습데이터_방법_및_데이터개수로_분리/24.09.12_only_crack/convnext_tiny_fpn_crack_hardnegative_100units.py" --crack_checkpoint "/home/deogwonkang/WindowsShare/05. Data/03. Checkpoints/hardnegative/학습데이터_방법_및_데이터개수로_분리/24.09.12_only_crack/iter_best.pth" --srx_dir "\\wsl.localhost\Ubuntu-22.04\home\deogwonkang\WindowsShare\05. Data\04. Raw Images & Archive\206.hardnegative\테스트데이터\br테스트데이터\대표테스트데이터\leftImg8bit\test" --rst_dir "/home/deogwonkang/WindowsShare/05. Data/04. Raw Images & Archive/206.hardnegative/탐지결과_비교/Joint/HoughTransform/Joint" --srx_suffix ".png" --rst_suffix ".JPG" --mask_suffix ".png" --rgb_to_bgr
+python inferences/multi_scale_inference_segmentor_crack.py --crack_config  "/home/user/WindowsShare/05. Data/03. Checkpoints/hardnegative/학습데이터_방법_및_데이터개수로_분리/CutMix/BR_Joint_leakage/100units/nonoversampling/seg_PS800_HNS1200_CutMix_noOversampling/convnext_tiny_fpn_crack_hardnegative_100units.py" --crack_checkpoint "/home/user/WindowsShare/05. Data/03. Checkpoints/hardnegative/학습데이터_방법_및_데이터개수로_분리/CutMix/BR_Joint_leakage/100units/nonoversampling/seg_PS800_HNS1200_CutMix_noOversampling/iter_joint(63000).pth" --srx_dir "/home/user/WindowsShare/05. Data/02. Training&Test/022. Ministry of Ocean/009_2023.0_건설연제공_매핑용/관리번호 #3, #4_카페리부두_해측부" --rst_dir "home/user/PT/Examples" --srx_suffix ".JPG" --rst_suffix ".JPG" --mask_suffix ".png "--rgb_to_bgr
 '''
+
 import os
 
 os.environ["OPENCV_IO_MAX_IMAGE_PIXELS"] = str(pow(2,40))

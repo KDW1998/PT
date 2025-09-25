@@ -10,7 +10,7 @@ import os
 # =============================================================================
 # 기본 경로 설정
 # =============================================================================
-BASE_DIR = "/home/deogwonkang/Eunji_MapDemo"
+BASE_DIR = "/home/user/PT"
 
 # Excel 파일 저장 경로 (수정 가능)
 EXCEL_OUTPUT_PATH = os.path.join(BASE_DIR, "PyDracula/init/data/crack_detection_results.xlsx")
@@ -22,13 +22,13 @@ IMAGE_OUTPUT_PATH = os.path.join(BASE_DIR, "crack_detection_images")
 # 크기 필터링 설정 (픽셀 단위)
 # =============================================================================
 # 최소 크랙 면적 (픽셀 단위)
-MIN_CRACK_AREA = 1000
+MIN_CRACK_AREA = 0
 
 # 최소 크랙 폭 (픽셀 단위)
-MIN_CRACK_WIDTH = 3.0
+MIN_CRACK_WIDTH = 0
 
 # 최소 크랙 길이 (픽셀 단위)
-MIN_CRACK_LENGTH = 50.0
+MIN_CRACK_LENGTH = 0
 
 # =============================================================================
 # 시각화 설정
@@ -46,10 +46,10 @@ CRACK_COLOR = [0, 0, 255]  # 빨간색
 WINDOW_SIZE = 1024
 
 # 윈도우 겹침 비율
-OVERLAP_RATIO = 0.1
+OVERLAP_RATIO = 0.5
 
 # 신뢰도 임계값
-SCORE_THRESHOLD = 0.1
+SCORE_THRESHOLD = 0.5
 
 # =============================================================================
 # 기본 좌표 설정 (이미지에서 좌표를 추출할 수 없는 경우 사용)

@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import mmcv
 from mmseg.apis import init_model, inference_model
-from mmengine import track_progress
+# from mmengine import track_progress  # Not used in this version
 from torch.cuda import empty_cache
 
 # 기존 모듈 import
@@ -135,15 +135,15 @@ def save_detection_to_excel(detection_data, excel_path):
     탐지 결과를 Excel 파일로 저장
     
     Args:
-        detection_data: 탐지 데이터 리스트
+        detection_data: 탐지 데이터 리스트 (위도, 경도, 이미지 경로)
         excel_path: Excel 파일 경로
     """
     if not detection_data:
         print("저장할 탐지 데이터가 없습니다.")
         return
     
-    # DataFrame 생성
-    df = pd.DataFrame(detection_data, columns=['이미지 이름', '위도', '경도', '크랙 개수', '최대 크기'])
+    # DataFrame 생성 (위도, 경도, 이미지 경로 형식)
+    df = pd.DataFrame(detection_data, columns=['위도', '경도', '이미지 경로'])
     
     # Excel 파일로 저장
     try:
@@ -161,7 +161,7 @@ def extract_image_info_from_path(image_path):
         image_path: 이미지 파일 경로
     
     Returns:
-        tuple: (이미지_이름, 위도, 경도)
+        tuple: (위도, 경도, 이미지_경로)
     """
     # 기본값 설정 (실제 환경에 맞게 수정 필요)
     image_name = os.path.basename(image_path)
@@ -215,7 +215,7 @@ def main():
     detection_results = []
     
     # 각 이미지에 대해 처리
-    for idx, img_path in enumerate(track_progress(img_list, description="크랙 탐지 진행 중")):
+    for idx, img_path in enumerate(img_list):
         print(f"\n처리 중: {os.path.basename(img_path)} ({idx+1}/{len(img_list)})")
         
         try:
@@ -255,13 +255,11 @@ def main():
                 max_size = max([float(crack[1].split('x')[0]) * float(crack[1].split('x')[1]) 
                               for crack in filtered_cracks])
                 
-                # 탐지 결과 저장
+                # 탐지 결과 저장 (위도, 경도, 이미지 경로만)
                 detection_results.append([
-                    image_name,
                     latitude,
                     longitude,
-                    len(filtered_cracks),
-                    f"{max_size:.2f}"
+                    image_name
                 ])
                 
                 # 빨간색 오버레이 시각화 (정량화 텍스트 제외)
