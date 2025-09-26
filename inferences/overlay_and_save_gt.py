@@ -96,6 +96,27 @@ def convert_coordinates_to_mask(coordinates_str, img_shape):
     
     return np.zeros(img_shape[:2], dtype=np.uint8)
 
+def resize_and_convert_to_jpg(image, target_size=(400, 400), quality=85):
+    """
+    이미지를 400x400으로 리사이즈하고 JPG 형식으로 변환
+    
+    Args:
+        image: 입력 이미지 (numpy array)
+        target_size: 목표 크기 (width, height)
+        quality: JPG 품질 (1-100)
+    
+    Returns:
+        resized_image: 리사이즈된 이미지
+    """
+    # 이미지 리사이즈
+    resized_image = cv2.resize(image, target_size, interpolation=cv2.INTER_AREA)
+    
+    # BGR to RGB 변환 (JPG 저장을 위해)
+    if len(resized_image.shape) == 3 and resized_image.shape[2] == 3:
+        resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
+    
+    return resized_image
+
 def create_visualization_overlay(img, gt_mask, color, alpha):
     """
     Create translucent overlay on original image
@@ -174,9 +195,12 @@ def main():
             
             combined_side_by_side = np.hstack((combined_img, gt_rgb))
 
-            # Save result
-            output_filename = os.path.join(output_dir, os.path.basename(img_file).replace(img_suffix, f'_visualized{img_suffix}'))
-            cv2.imwrite(output_filename, combined_side_by_side)
+            # Resize and convert to JPG
+            resized_combined = resize_and_convert_to_jpg(combined_side_by_side)
+
+            # Save result as JPG
+            output_filename = os.path.join(output_dir, os.path.basename(img_file).replace(img_suffix, '.jpg'))
+            cv2.imwrite(output_filename, cv2.cvtColor(resized_combined, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 85])
             
             print(f"Processed: {img_file}")
             processed_count += 1

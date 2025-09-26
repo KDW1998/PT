@@ -12,6 +12,7 @@ from glob import glob
 import pandas as pd
 import numpy as np
 import mmcv
+import cv2
 from mmseg.apis import init_model, inference_model
 # from mmengine import track_progress  # Not used in this version
 from torch.cuda import empty_cache
@@ -49,6 +50,27 @@ def create_output_directories():
     # Excel 출력 디렉토리 생성
     excel_dir = os.path.dirname(CONFIG['EXCEL_OUTPUT_PATH'])
     os.makedirs(excel_dir, exist_ok=True)
+
+def resize_and_convert_to_jpg(image, target_size=(400, 400), quality=85):
+    """
+    이미지를 400x400으로 리사이즈하고 JPG 형식으로 변환
+    
+    Args:
+        image: 입력 이미지 (numpy array)
+        target_size: 목표 크기 (width, height)
+        quality: JPG 품질 (1-100)
+    
+    Returns:
+        resized_image: 리사이즈된 이미지
+    """
+    # 이미지 리사이즈
+    resized_image = cv2.resize(image, target_size, interpolation=cv2.INTER_AREA)
+    
+    # BGR to RGB 변환 (JPG 저장을 위해)
+    if len(resized_image.shape) == 3 and resized_image.shape[2] == 3:
+        resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
+    
+    return resized_image
 
 def filter_crack_by_size(crack_quantification_results, min_area=None, min_width=None, min_length=None):
     """
@@ -255,11 +277,14 @@ def main():
                 max_size = max([float(crack[1].split('x')[0]) * float(crack[1].split('x')[1]) 
                               for crack in filtered_cracks])
                 
-                # 탐지 결과 저장 (위도, 경도, 이미지 경로만)
+                # 최종 JPG 파일명으로 변경 (원본 .png를 .jpg로 변경)
+                final_image_name = image_name.replace('.png', '.jpg')
+                
+                # 탐지 결과 저장 (위도, 경도, 최종 이미지 경로)
                 detection_results.append([
                     latitude,
                     longitude,
-                    image_name
+                    final_image_name
                 ])
                 
                 # 빨간색 오버레이 시각화 (정량화 텍스트 제외)
@@ -269,18 +294,22 @@ def main():
                     alpha=CONFIG['VISUALIZATION_ALPHA']
                 )
                 
-                # 결과 이미지 저장
-                rst_name = os.path.basename(img_path).replace(args.srx_suffix, args.rst_suffix)
-                mask_name = os.path.basename(img_path).replace(args.srx_suffix, args.mask_suffix)
+                # 결과 이미지 저장 (JPG 형식으로 변경)
+                rst_name = os.path.basename(img_path).replace(args.srx_suffix, '.jpg')
+                mask_name = os.path.basename(img_path).replace(args.srx_suffix, '.jpg')
                 
                 rst_path = os.path.join(args.rst_dir, rst_name)
                 mask_path = os.path.join(args.rst_dir, mask_name)
-                vis_path = os.path.join(CONFIG['IMAGE_OUTPUT_PATH'], f"visualized_{rst_name}")
+                vis_path = os.path.join(CONFIG['IMAGE_OUTPUT_PATH'], rst_name)
                 
-                # 파일 저장
-                mmcv.imwrite(visualized_image, rst_path)
-                mmcv.imwrite(crack_mask.astype(np.uint8), mask_path)
-                mmcv.imwrite(visualized_image, vis_path)
+                # 이미지 리사이즈 및 JPG 변환
+                resized_visualized = resize_and_convert_to_jpg(visualized_image)
+                resized_mask = resize_and_convert_to_jpg(crack_mask.astype(np.uint8))
+                
+                # 파일 저장 (JPG 형식)
+                cv2.imwrite(rst_path, cv2.cvtColor(resized_visualized, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 85])
+                cv2.imwrite(mask_path, resized_mask, [cv2.IMWRITE_JPEG_QUALITY, 85])
+                cv2.imwrite(vis_path, cv2.cvtColor(resized_visualized, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 85])
                 
                 print(f"  결과 저장: {rst_path}")
                 print(f"  시각화 저장: {vis_path}")

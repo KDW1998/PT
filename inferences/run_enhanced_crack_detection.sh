@@ -34,8 +34,8 @@ python inferences/enhanced_crack_inference.py \
     --rst_dir "$OUTPUT_DIR" \
     --excel_output "$EXCEL_OUTPUT" \
     --srx_suffix ".png" \
-    --rst_suffix ".png" \
-    --mask_suffix ".JPG" \
+    --rst_suffix ".jpg" \
+    --mask_suffix ".jpg" \
     --rgb_to_bgr
 
 echo ""
@@ -60,7 +60,7 @@ python inferences/overlay_and_save_gt.py \
     --target_label 1 \
     --alpha 0.6 \
     --img_suffix ".JPG" \
-    --gt_suffix ".png"
+    --gt_suffix ".jpg"
 
 echo ""
 echo "=== 마스크 시각화 완료 ==="
